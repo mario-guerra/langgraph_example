@@ -237,25 +237,11 @@ class SportsAgent(BaseAgent):
 workflow.add_node("sports_agent", sports_agent)
 ```
 
-## 🤝 Contributing
+## 📝 License & Usage
 
-### Code Structure
-- **One responsibility per file**: Keep modules focused
-- **Type annotations**: Maintain type safety  
-- **Error handling**: Always include graceful failures
-- **Documentation**: Update README for new features
+**MIT License** - Free for learning and experimentation.
 
-### Development Workflow
-1. Create feature branch
-2. Add/modify agents or tools
-3. Update tests and documentation
-4. Submit pull request
-
-## �📝 License & Usage
-
-**MIT License** - Free for learning, experimentation, and commercial use.
-
-> **Note**: This project is designed for educational purposes and learning LangGraph patterns. For production use, consider additional security, monitoring, and scaling features.
+> **Note**: This project is designed for educational purposes and learning LangGraph patterns, not for production use.
 
 ---
 
@@ -289,5 +275,3 @@ cat .env
 - 🔧 **Debugging**: Use component testing commands above
 
 ---
-
-**🎉 Ready to explore multi-agent AI systems? Start with `python main.py`!**
