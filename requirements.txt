@@ -1,0 +1,6 @@
+langchain-core
+langchain
+langgraph
+python-dotenv
+serpapi
+google-search-results
