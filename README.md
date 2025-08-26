@@ -1,6 +1,6 @@
 # LangGraph Multi-Agent Research System 🌤️📰
 
-A robust - **🛡️ Robust Error Handling**: Graceful failure management with user-friendly messages
+**🛡️ Robust Error Handling**: Graceful failure management with user-friendly messages
 - **📱 Interactive CLI**: Clean command-line interface with cont## 🚀 Deployment & Scaling
 
 ### Future Considerations
