@@ -1,53 +1,96 @@
 """Main graph orchestration for the multi-agent system."""
 from langgraph.graph import StateGraph, END, START
 from state import AgentState
-from agents import coordinator_agent, weather_agent, news_agent, summary_agent
+from agents import (
+    intent_parser_node, 
+    generate_clarification_node,
+    executor_node,
+    signal_handler_node,
+    evidence_evaluator_node
+)
+from planner import planner_node
+from credibility import credibility_node
+from debate import optimist_node, skeptic_node, judge_node
 
-def should_get_weather(state: AgentState) -> str:
-    """Conditional routing for weather agent."""
-    if state["intent"] in ["weather", "both"]:
-        return "weather_agent"
-    return "news_check"
+def route_after_intent(state: AgentState) -> str:
+    parsed = state.get("parsed_query", {})
+    if parsed.get("is_ambiguous"):
+        clarification = state.get("clarification")
+        # If no clarification generated yet, or waiting for answer
+        if not clarification or not clarification.get("user_answer"):
+            return "clarification"
+    return "planner"
 
-def should_get_news(state: AgentState) -> str:
-    """Conditional routing for news agent.""" 
-    if state["intent"] in ["news", "both"]:
-        return "news_agent"
-    return "summary_agent"
+def route_after_executor(state: AgentState) -> str:
+    plan = state.get("research_plan", {})
+    if plan.get("current_step_idx", 0) < len(plan.get("steps", [])):
+        scratchpad = state.get("scratchpad", [])
+        unacted = [s for s in scratchpad if not s.get("acted_on") and s.get("signal_type") == "amend_plan"]
+        if unacted:
+            return "signal_handler"
+        return "executor"
+    return "evidence_evaluator"
+
+def route_after_evidence(state: AgentState) -> str:
+    plan = state.get("research_plan", {})
+    if plan.get("current_step_idx", 0) < len(plan.get("steps", [])):
+        return "executor"
+    return "credibility"
 
 def create_research_graph():
-    """Create and compile the research graph."""
     workflow = StateGraph(AgentState)
     
-    # Add nodes
-    workflow.add_node("coordinator", coordinator_agent)
-    workflow.add_node("weather_agent", weather_agent)
-    workflow.add_node("news_agent", news_agent)
-    workflow.add_node("summary_agent", summary_agent)
+    workflow.add_node("intent_parser", intent_parser_node)
+    workflow.add_node("clarification", generate_clarification_node)
+    workflow.add_node("planner", planner_node)
+    workflow.add_node("executor", executor_node)
+    workflow.add_node("signal_handler", signal_handler_node)
+    workflow.add_node("evidence_evaluator", evidence_evaluator_node)
+    workflow.add_node("credibility", credibility_node)
+    workflow.add_node("optimist", optimist_node)
+    workflow.add_node("skeptic", skeptic_node)
+    workflow.add_node("judge", judge_node)
     
-    # Add edges with conditional routing
-    workflow.add_edge(START, "coordinator")
+    workflow.add_edge(START, "intent_parser")
     
-    # Conditional routing based on intent
     workflow.add_conditional_edges(
-        "coordinator",
-        should_get_weather,
+        "intent_parser",
+        route_after_intent,
         {
-            "weather_agent": "weather_agent",
-            "news_check": "news_agent"  # Skip weather, go to news check
+            "clarification": "clarification",
+            "planner": "planner"
         }
     )
     
+    # We pause execution for clarification in main.py, but graph logic goes END
+    workflow.add_edge("clarification", END)
+    
+    workflow.add_edge("planner", "executor")
+    
     workflow.add_conditional_edges(
-        "weather_agent", 
-        should_get_news,
+        "executor",
+        route_after_executor,
         {
-            "news_agent": "news_agent",
-            "summary_agent": "summary_agent"  # Skip news, go to summary
+            "executor": "executor",
+            "signal_handler": "signal_handler",
+            "evidence_evaluator": "evidence_evaluator"
         }
     )
     
-    workflow.add_edge("news_agent", "summary_agent")
-    workflow.add_edge("summary_agent", END)
+    workflow.add_edge("signal_handler", "executor")
+    
+    workflow.add_conditional_edges(
+        "evidence_evaluator",
+        route_after_evidence,
+        {
+            "executor": "executor",
+            "credibility": "credibility"
+        }
+    )
+    
+    workflow.add_edge("credibility", "optimist")
+    workflow.add_edge("optimist", "skeptic")
+    workflow.add_edge("skeptic", "judge")
+    workflow.add_edge("judge", END)
     
     return workflow.compile()

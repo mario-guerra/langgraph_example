@@ -1,6 +1,6 @@
-# LangGraph Multi-Agent Research System 🌤️📰
+# Adaptive Multi-Agent Research System 🧠🔍
 
-A lightweight multi-agent research system built with LangGraph that combines weather and news intelligence. This project demonstrates agent orchestration, conditional routing, and state management patterns suitable for learning and extension. It uses LLM-powered agents plus web-search tools to provide location-aware weather and news summaries.
+A production-grade, stateful "Plan-Execute" research framework built with LangGraph and Gemini 2.5 Flash. This project demonstrates advanced agentic patterns, moving beyond static routing to dynamic, uncertainty-driven research loops. It features autonomous planning, structured LLM reasoning, credibility scoring, and an adversarial debate pipeline to produce highly calibrated answers.
 
 ## 🚀 Quick Start
 
@@ -12,194 +12,98 @@ source .venv/bin/activate    # On Windows: .venv\Scripts\activate
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Set up API keys (recommended in .env)
-echo "GOOGLE_API_KEY=your_google_gemini_key_here" >> .env
+# 3. Authenticate with Google Cloud (for Vertex AI)
+gcloud auth application-default login
+
+# 4. Set up SerpAPI key in .env
 echo "SERPAPI_API_KEY=your_serpapi_key_here" >> .env
 
-# 4. Run the application
+# 5. Run the interactive CLI
 python main.py
 ```
 
-Notes:
-- `config.py` will prompt for `GOOGLE_API_KEY` if not set. `SERPAPI_API_KEY` is required for web search functionality (news & weather lookups).
-- Use `demo.py` to run canned test cases without interactive input:
-```bash
-python demo.py
-```
+*Note: You can also run `python demo.py` to execute a suite of automated test cases (including complex ambiguity resolution).*
 
 ## 🏗️ Architecture Overview
 
-Repository layout
-```
-langgraph_example/
-├── main.py          # Application entry point & CLI
-├── config.py        # Environment & API key setup
-├── state.py         # Type-safe state definitions
-├── agents.py        # LLM-powered agent implementations
-├── tools.py         # Search tools (SerpAPI)
-├── graph.py         # Conditional routing & orchestration
-├── demo.py          # Demo/test script
-└── weather.py       # Deprecated legacy reference
-```
+Unlike traditional DAGs, this system uses a dynamic, cyclical **Plan-Execute** architecture. The graph routes intelligently based on the LLM's own uncertainty and evaluation signals.
 
-Agent flow (high-level)
 ```mermaid
 graph TD
-  A[User Input] --> B[Coordinator Agent]
-  B --> C{Intent Detection}
-  C -->|Weather| D[Weather Agent]
-  C -->|News| E[News Agent]
-  C -->|Both| F[Weather + News Agents]
-  C -->|Unknown| G[Help Response]
-  D --> H[Summary Agent]
-  E --> H
-  F --> H
-  G --> I[End]
-  H --> I
+  classDef llmNode fill:#4c1d95,stroke:#8b5cf6,stroke-width:2px,color:#ffffff,rx:8px,ry:8px;
+
+  A["User Input"] --> B["Intent Parser (LLM)"]:::llmNode
+  B --> C{"Ambiguous?"}
+  C -->|Yes| D["Clarification Node (LLM)"]:::llmNode
+  D -.->|"User Input"| B
+  C -->|No| E["Planner Node (LLM)"]:::llmNode
+  E --> F["Executor: Run Tool"]
+  F --> G["Step Evaluator (LLM)"]:::llmNode
+  G -->|Retry| F
+  G -->|Accept| H["Evidence Evaluator (LLM)"]:::llmNode
+  H --> I{"Sufficient?"}
+  I -->|Augment| F
+  I -->|Proceed| J["Credibility Scorer (LLM)"]:::llmNode
+  J --> K["Debate: Optimist (LLM)"]:::llmNode
+  K --> L["Debate: Skeptic (LLM)"]:::llmNode
+  L --> M["Judge (LLM)"]:::llmNode
+  M --> N["Final Answer"]
 ```
 
-## ⭐ Key Features
+### Core Pipeline Phases:
+1. **Intent & Clarification**: Parses user intent. If the query is genuinely ambiguous, it pauses execution, prompts the user for clarification, and resumes once answered.
+2. **Plan & Execute**: The Planner generates a `ResearchPlan` (Pydantic schema). The Executor iterates through steps, automatically retrying failed or low-quality search results.
+3. **Uncertainty Loops**: The Evidence Evaluator audits collected data. If it detects coverage gaps or contradictions, it can autonomously append new steps to the plan and send execution back to the Executor.
+4. **Debate & Synthesis**: 
+   - **Credibility Scorer**: Rates every data source on authority, recency, and relevance.
+   - **Optimist**: Drafts the best-case argument from the evidence.
+   - **Skeptic**: Rigorously challenges the optimist's claims, pointing out gaps or low-credibility sources.
+   - **Judge**: Synthesizes the debate into a final, highly-calibrated verdict.
 
-- Smart intent detection (weather, news, both)
-- Conditional execution to reduce unnecessary API calls
-- LLM-powered agents for natural, contextual responses
-- SerpAPI-backed search tools for weather and news results
-- Type-safe state management and modular design
-- Graceful error handling and fallback messages
+## 📁 Repository Layout
 
-##  Usage Examples
-
-Weather-only:
 ```
-Location: San Francisco, CA
-Query: what's the weather like?
-
-Result: Currently 68°F and partly cloudy in San Francisco. Light winds from the west at 8 mph.
-```
-
-News-only:
-```
-Location: New York, NY
-Query: latest news
-
-Result: Recent headlines for New York:
-• NYC Subway Expansion Approved (NY Times)
-  $15B project will add 3 new lines by 2027
-• Broadway Shows Return Post-Strike (AP)
-  Full schedule resuming this weekend
+langgraph_example/
+├── main.py          # Interactive CLI with real-time state streaming
+├── demo.py          # Automated integration tests
+├── graph.py         # Dynamic graph routing and orchestration
+├── state.py         # Complex AgentState definitions
+├── schemas.py       # Pydantic models enforcing strict LLM structured outputs
+├── agents.py        # Intent, Clarification, Executor, and Evaluator nodes
+├── planner.py       # Autonomous research planning node
+├── credibility.py   # Source credibility scoring engine
+├── debate.py        # Optimist, Skeptic, and Judge nodes
+├── utils.py         # LLM utilities (e.g., auto-correcting validation loops)
+├── llm.py           # Centralized Vertex AI model initialization
+└── tools.py         # Tool registry (SerpAPI web, news, weather search)
 ```
 
-Combined:
-```
-Location: Miami, FL
-Query: weather and news
+## ⭐ Key Engineering Features
 
-Result: 🌤️ WEATHER: Currently 82°F and sunny with high humidity.
-        📰 NEWS: Hurricane season preparations underway; local tech hub opens.
-```
+- **Strict Structured Outputs**: Every single LLM node outputs rigidly defined Pydantic schemas. 
+- **Auto-Correction Loops**: If the LLM generates invalid JSON or violates the Pydantic schema, the `invoke_structured` utility catches the `ValidationError` and feeds it back to the LLM to force a correction before crashing.
+- **Cross-Agent Signaling**: Agents communicate via a shared `scratchpad` using a publish-subscribe signal pattern (e.g., the Evidence Evaluator leaves "flag_finding" signals for the Judge).
+- **Streaming Observability**: The CLI uses `stream_mode=["messages", "updates"]` to provide granular, real-time logging of internal node executions, allowing users to watch the agent "think".
+- **Google Vertex AI**: Powered by `gemini-2.5-flash` via Vertex AI, completely bypassing the harsh rate limits of the free-tier developer APIs.
 
-## 🔧 Setup Guide
+## 🔧 Setup & Dependencies
 
 ### Prerequisites
-- Python 3.8+
-- Virtual environment (recommended)
-- Valid API keys:
-  - GOOGLE_API_KEY — For LLM/model usage (Gemini)
-  - SERPAPI_API_KEY — For web search (news & weather)
+- Python 3.11+
+- Google Cloud Platform account (with Vertex AI enabled)
+- `gcloud` CLI installed and authenticated
+- SerpAPI key
 
-### Environment Setup
-1. Clone and enter project:
-```bash
-git clone https://github.com/mario-guerra/langgraph_example.git
-cd langgraph_example
-```
-2. Create virtual env and install:
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-3. Add API keys to `.env` or allow `config.py` to prompt:
-```env
-GOOGLE_API_KEY=your_google_gemini_key_here
-SERPAPI_API_KEY=your_serpapi_key_here
-```
-
-## 🧪 Testing
-
-Manual:
-- Run `python main.py` and try queries: "weather", "news", "weather and news".
-
-Automated demo:
-```bash
-python demo.py
-```
-
-Component checks:
-```bash
-python -c "from graph import create_research_graph; print('✅ Graph builds successfully')"
-python -c "from agents import coordinator_agent; print('✅ Agents import successfully')"
-python -c "from tools import weather_search; print('✅ Tools import successfully')"
-```
-
-## 🏛️ Technical Details
-
-Agent responsibilities:
-- Coordinator: intent detection, location resolution, routing
-- Weather agent: SerpAPI weather search + LLM formatting
-- News agent: News-specific SerpAPI search + LLM formatting
-- Summary agent: Synthesis and final LLM formatting
-
-State (see `state.py`):
-- messages: conversation history
-- location: resolved location string
-- intent: "weather" | "news" | "both" | "unknown"
-- weather_data, news_data: agent outputs
-
-Tools:
-- `tools.py` contains `weather_search`, `news_search`, `resolve_location` implemented with SerpAPI.
-
-## 🔄 Legacy / Deprecated
-
-`weather.py` is kept as a reference for the legacy approach and is marked DEPRECATED. Historical refactor rationale and implementation notes can be found in the repository history and commit messages.
+### API Keys & Auth
+1. **Vertex AI**: We use `langchain-google-vertexai`. Ensure you have authenticated locally via `gcloud auth application-default login` and set your quota project.
+2. **SerpAPI**: Create a `.env` file and add `SERPAPI_API_KEY=your_key_here`.
 
 ## 🔍 Troubleshooting
 
-Common issues:
-- "Module not found": ensure virtualenv is active and dependencies installed.
-- "API key not found": verify keys in `.env` or set them in the environment.
-- No search results: check SerpAPI quota and try more specific location names.
-
-Useful commands:
-```bash
-# Show .env contents
-cat .env
-
-# Run demo tests
-python demo.py
-```
-
-## 🧾 Dependencies
-
-See `requirements.txt` (high-level):
-- langchain-core, langchain, langgraph
-- langchain-google-genai
-- python-dotenv
-- google-search-results (SerpAPI client)
-
-## 🔮 Future Enhancements
-
-- Add more agents (sports, finance)
-- Better location resolution via geocoding
-- Caching (Redis) and rate limiting
-- Async/parallel agent execution
-- Web UI (FastAPI / Streamlit)
-- Observability and monitoring
+- **429 RESOURCE_EXHAUSTED / NOT_FOUND**: This indicates a Google API issue. Ensure you are authenticated via `gcloud auth application-default login` and that your GCP project has the Vertex AI API enabled.
+- **Missing SerpAPI Key**: The Executor will safely catch the missing key and return an error string, but no actual research will occur. Add it to your `.env`.
+- **Hanging Execution**: If the graph seems to pause for a long time at `credibility`, this is normal! The credibility node runs sequential LLM evaluation calls against every search result.
 
 ## 📝 License
 
-MIT License — Free for learning and experimentation.
-
----
-
-Changelog: Restored lost intro, fixed truncated/duplicated lines, clarified setup and demo instructions, and preserved original tone.
+MIT License — Free for learning, refactoring, and agentic experimentation.

@@ -101,3 +101,34 @@ def resolve_location(location: str) -> str:
     }
     
     return location_mappings.get(location, location)
+
+
+@tool
+def web_search(query: str, location: str = "") -> str:
+    """General-purpose web search for topics beyond weather and news."""
+    api_key = os.getenv("SERPAPI_API_KEY")
+    if not api_key:
+        return "SerpAPI key not found. Please set SERPAPI_API_KEY in your .env file."
+
+    search_query = f"{location} {query}".strip() if location else query
+    params = {
+        "q": search_query,
+        "api_key": api_key,
+        "hl": "en",
+        "num": 5,
+    }
+
+    try:
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        if "organic_results" in results and results["organic_results"]:
+            items = []
+            for item in results["organic_results"][:4]:
+                title = item.get("title", "")
+                snippet = item.get("snippet", "")
+                source = item.get("displayed_link", "")
+                items.append(f"• [{source}] {title}\n  {snippet}")
+            return "\n\n".join(items)
+        return f"No results found for: {search_query}"
+    except Exception as e:
+        return f"Error: {str(e)}"
