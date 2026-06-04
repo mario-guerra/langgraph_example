@@ -1,0 +1,118 @@
+(.venv) MacBook-Pro:langgraph_example mariog$ python demo.py 
+🧪 Running demo test...
+
+==================================================
+Test 1: Complex ambiguous query
+Query: Should I invest in the SpaceX IPO?
+==================================================
+   [Node: intent_parser] Executed.
+   [Node: planner] Executed.
+
+   -> [executor] Executing step: news_search('SpaceX IPO investment analysis expert opinions recent news')... Done.
+      - Evaluating result quality... Decision: ACCEPT
+   [Node: executor] Executed.
+
+   -> [executor] Executing step: web_search('SpaceX IPO financial fundamentals market analysis investment review')... Done.
+      - Evaluating result quality... Decision: ACCEPT
+   [Node: executor] Executed.
+
+   -> [evidence_evaluator] Auditing collected evidence for gaps or contradictions... Decision: AUGMENT
+   [Node: evidence_evaluator] Executed.
+
+   -> [executor] Executing step: web_search('SpaceX IPO 2024 2025 valuation date retail investor access risks analysis')... Done.
+      - Evaluating result quality... Decision: RETRY
+   [Node: executor] Executed.
+
+   -> [executor] Executing step: web_search('SpaceX IPO retail investor access timeline pricing')... Done.
+      - Evaluating result quality... Decision: RETRY
+   [Node: executor] Executed.
+
+   -> [executor] Executing step: web_search('SpaceX IPO official retail investor access status valuation pricing date')... Done.
+      - Evaluating result quality... Decision: RETRY
+   [Node: executor] Executed.
+
+   -> [executor] Executing step: news_search('SpaceX IPO investment risks benefits analyst recommendations')... Done.
+      - Evaluating result quality... Decision: ACCEPT
+   [Node: executor] Executed.
+
+   -> [evidence_evaluator] Auditing collected evidence for gaps or contradictions... Decision: PROCEED_WITH_CAVEATS
+   [Node: evidence_evaluator] Executed.
+
+   -> [credibility] Scoring 4 search results for source authority/recency...
+      - Scoring result 1/4 from news_search... Done (3 sources identified).
+      - Scoring result 2/4 from web_search... Done (4 sources identified).
+      - Scoring result 3/4 from web_search... Done (4 sources identified).
+      - Scoring result 4/4 from news_search... Done (3 sources identified).
+   [Node: credibility] Executed.
+
+   -> [optimist] Drafting the best-case argument from the evidence...
+   [Node: optimist] Executed.
+
+   -> [skeptic] Challenging the Optimist's argument for weaknesses...
+   [Node: skeptic] Executed.
+
+   -> [judge] Weighing the debate and synthesizing final calibrated answer...
+   [Node: judge] Executed.
+
+📊 Intent detected - Topics: ['finance', 'investments']
+📍 Location resolved: 
+
+🎯 Final Response (Conf: 0.62):
+## Should You Invest in the SpaceX IPO?
+
+**Short answer: Not yet — and proceed with significant caution if/when it happens.**
+
+---
+
+### 🔴 Is There Even an IPO to Invest In?
+
+This is the most important starting point: **no confirmed, public SpaceX IPO currently exists.** The evidence is contradictory on this:
+
+- A low-credibility Yahoo Finance source claims a June 12 Nasdaq listing under ticker "SPCX"
+- More authoritative sources (Nasdaq Private Market, Capital.com) confirm SpaceX remains **a private company** with no official IPO date set
+- Motley Fool (speculative, future-dated article) references expected filing timelines but nothing confirmed
+
+⚠️ **Do not act on claims of a specific IPO date or ticker without verifying through SEC EDGAR filings or official SpaceX announcements.**
+
+---
+
+### 🟡 If an IPO Does Happen — Key Risks to Know
+
+**1. Disclosure Red Flags (High Credibility — CNBC, 0.97)**
+Elon Musk has already made public statements about SpaceX's deal with Anthropic that *diverged from the IPO prospectus filing*. This is a material concern — inconsistencies between a CEO's statements and official filings are a serious governance warning sign.
+
+**2. Extreme Valuation (Investing.com, 0.90)**
+Analysts flag that SpaceX's reported IPO pricing implies a revenue multiple of **95–107x 2025 revenue**. This is an exceptionally high multiple, leaving very little room for error and pricing in decades of optimistic growth.
+
+**3. Large IPOs Historically Underperform (Barron's, 0.80)**
+Barron's specifically ran a piece titled *"SpaceX IPO: How to Buy and Why You Shouldn't,"* noting that the **largest U.S. IPOs structurally tend to underperform the market**, with a meaningful share delivering negative returns. This is a well-documented pattern in financial literature.
+
+**4. Hype ≠ Returns**
+The media buzz and retail investor excitement are real — but they are more often a contrarian warning signal than a green light.
+
+---
+
+### ✅ The Bull Case (Weaker, But Real)
+
+- SpaceX has genuine, dominant market position in launch services and Starlink's satellite internet business
+- Strong institutional interest and significant revenue growth are real
+- For long-term investors with high risk tolerance, there *could* be upside — but timing and entry price matter enormously
+
+---
+
+### 🧭 Bottom Line
+
+| Factor | Verdict |
+|---|---|
+| IPO confirmed? | ❌ Not confirmed as of available evidence |
+| Valuation reasonable? | ❌ Extremely high multiple |
+| Governance concerns? | ⚠️ Disclosure inconsistencies flagged |
+| Historical large-IPO performance | ⚠️ Tends to underperform |
+| Long-term business quality | ✅ Strong underlying business |
+
+**Recommendation:** Wait for the actual S-1 filing, review it carefully (or have a financial advisor do so), watch the price at which it IPOs, and be skeptical of hype-driven decision-making. The Skeptic's position is better-supported by the evidence here.
+
+*This is not personalized financial advice. Consult a licensed financial advisor before making investment decisions.*
+
+==================================================
+✅ Demo complete!

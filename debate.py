@@ -2,13 +2,13 @@
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from schemas import DebateArgument, JudgeVerdict, StepResult
 from state import AgentState
-from llm import model
+from llm import o3_mini, claude_sonnet
 from utils import invoke_structured
 from credibility import build_credibility_report
 
-_optimist = model.with_structured_output(DebateArgument)
-_skeptic = model.with_structured_output(DebateArgument)
-_judge = model.with_structured_output(JudgeVerdict)
+_optimist = o3_mini.with_structured_output(DebateArgument)
+_skeptic = claude_sonnet.with_structured_output(DebateArgument)
+_judge = claude_sonnet.with_structured_output(JudgeVerdict)
 
 OPTIMIST_SYSTEM_PROMPT = """
 You are the Optimist in a research debate. Your role is to argue the most

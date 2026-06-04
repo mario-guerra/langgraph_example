@@ -13,18 +13,18 @@ def demo_test():
     
     test_cases = [
         {
-            "query": "Should I drive to Austin tonight?",
+            "query": "Should I invest in the SpaceX IPO?",
             "description": "Complex ambiguous query"
         }
-        ,
-        {
-            "query": "What is the weather in Seattle today?",
-            "description": "Simple weather query"
-        },
-        {
-            "query": "Any recent news about AI regulation in the EU?",
-            "description": "News query"
-        }
+        # ,
+        # {
+        #     "query": "What is the weather in Seattle today?",
+        #     "description": "Simple weather query"
+        # },
+        # {
+        #     "query": "Any recent news about AI regulation in the EU?",
+        #     "description": "News query"
+        # }
     ]
     
     for i, test in enumerate(test_cases, 1):

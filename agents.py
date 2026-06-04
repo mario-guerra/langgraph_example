@@ -6,15 +6,15 @@ from schemas import (
     UncertaintyDecision, UncertaintyAction, EvidenceSufficiencyDecision
 )
 from state import AgentState
-from llm import model
+from llm import gemini_flash, claude_sonnet
 from utils import invoke_structured
 from tools import weather_search, news_search, web_search
 from credibility import build_credibility_report
 
-_intent_parser = model.with_structured_output(IntentSchema)
-_clarification_generator = model.with_structured_output(ClarificationSchema)
-_step_evaluator = model.with_structured_output(UncertaintyDecision)
-_evidence_evaluator = model.with_structured_output(EvidenceSufficiencyDecision)
+_intent_parser = gemini_flash.with_structured_output(IntentSchema)
+_clarification_generator = gemini_flash.with_structured_output(ClarificationSchema)
+_step_evaluator = gemini_flash.with_structured_output(UncertaintyDecision)
+_evidence_evaluator = claude_sonnet.with_structured_output(EvidenceSufficiencyDecision)
 
 TOOL_REGISTRY = {
     "weather_search": weather_search,

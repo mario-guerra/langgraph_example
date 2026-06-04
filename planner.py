@@ -2,10 +2,10 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from schemas import ResearchPlan
 from state import AgentState
-from llm import model
+from llm import o3_mini
 from utils import invoke_structured
 
-_planner = model.with_structured_output(ResearchPlan)
+_planner = o3_mini.with_structured_output(ResearchPlan)
 
 PLANNER_SYSTEM_PROMPT = """
 You are a research planner for an information retrieval system.

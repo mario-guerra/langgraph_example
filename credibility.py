@@ -4,13 +4,13 @@ from pydantic import BaseModel
 from typing import List
 from schemas import CredibilityAnnotation, StepResult
 from state import AgentState
-from llm import model
+from llm import gemini_flash
 from utils import invoke_structured
 
 class CredibilityList(BaseModel):
     annotations: List[CredibilityAnnotation]
 
-_scorer = model.with_structured_output(CredibilityList)
+_scorer = gemini_flash.with_structured_output(CredibilityList)
 
 CREDIBILITY_SYSTEM_PROMPT = """
 You are a research credibility scorer. Evaluate the provided search result.

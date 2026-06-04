@@ -1,6 +1,6 @@
 # Adaptive Multi-Agent Research System 🧠🔍
 
-A production-grade, stateful "Plan-Execute" research framework built with LangGraph and Gemini 2.5 Flash. This project demonstrates advanced agentic patterns, moving beyond static routing to dynamic, uncertainty-driven research loops. It features autonomous planning, structured LLM reasoning, credibility scoring, and an adversarial debate pipeline to produce highly calibrated answers.
+A production-grade, stateful "Plan-Execute" research framework built with LangGraph. Powered by a **Tri-Model Adversarial Architecture** utilizing OpenAI (`o3-mini`), Anthropic (`claude-3.5-sonnet-latest`), and Google Vertex AI (`gemini-2.5-flash`). This project demonstrates advanced agentic patterns, moving beyond static routing to dynamic, uncertainty-driven research loops. It features autonomous planning, structured LLM reasoning, credibility scoring, and an adversarial debate pipeline to produce highly calibrated answers.
 
 ## 🚀 Quick Start
 
@@ -84,7 +84,10 @@ langgraph_example/
 - **Auto-Correction Loops**: If the LLM generates invalid JSON or violates the Pydantic schema, the `invoke_structured` utility catches the `ValidationError` and feeds it back to the LLM to force a correction before crashing.
 - **Cross-Agent Signaling**: Agents communicate via a shared `scratchpad` using a publish-subscribe signal pattern (e.g., the Evidence Evaluator leaves "flag_finding" signals for the Judge).
 - **Streaming Observability**: The CLI uses `stream_mode=["messages", "updates"]` to provide granular, real-time logging of internal node executions, allowing users to watch the agent "think".
-- **Google Vertex AI**: Powered by `gemini-2.5-flash` via Vertex AI, completely bypassing the harsh rate limits of the free-tier developer APIs.
+- **Tri-Model Adversarial Architecture**: The system weaponizes the unique strengths of the three major frontier models against each other:
+  - **OpenAI `o3-mini` (The Architect & Advocate)**: Powers the `Planner` and `Optimist` nodes. Its internal RL-based chain-of-thought makes it unmatched at complex multi-step research decomposition, while its confident synthesis style is perfect for building the strongest possible affirmative case.
+  - **Anthropic `claude-3.5-sonnet-latest` (The Critic & Arbiter)**: Powers the `Skeptic`, `Evidence Evaluator`, and `Judge` nodes. Claude's inherent caution and pedantry make it the ultimate "red team." It ruthlessly spots logical fallacies in the Optimist's argument and delivers perfectly calibrated, hallucination-free final verdicts.
+  - **Google `gemini-2.5-flash` (The Workhorse)**: Powers the `Intent Parser`, `Executor`, and `Credibility Scorer`. Flash’s massive context window and ultra-low latency make it the ideal engine to grind through high-volume, repetitive evaluation loops without bottlenecking the pipeline.
 
 ## 🔧 Setup & Dependencies
 
