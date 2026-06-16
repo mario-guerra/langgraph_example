@@ -32,3 +32,4 @@ Thumbs.db
 # Misc
 *.sqlite3
 *.db
+rust_agent/target/*
