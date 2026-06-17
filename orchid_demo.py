@@ -6,25 +6,16 @@ from graph import create_research_graph
 from state import AgentState
 
 def demo_test():
-    """Run a demo test of the system."""
-    print("🧪 Running demo test...")
+    """Run a demo test of the system with Orchid capture mode."""
+    print("🧪 Running demo test with Orchid capture mode...")
     setup_api_keys()
     research_graph = create_research_graph()
     
     test_cases = [
         {
-            "query": "Should I invest in the SpaceX IPO?",
+            "query": "AI is improving at a rapid pace. Extrapolate out five years into the future and answer this question - will AI be beneficial or detrimental to humanity? Justify your opinion either way.",
             "description": "Complex ambiguous query"
         }
-        # ,
-        # {
-        #     "query": "What is the weather in Seattle today?",
-        #     "description": "Simple weather query"
-        # },
-        # {
-        #     "query": "Any recent news about AI regulation in the EU?",
-        #     "description": "News query"
-        # }
     ]
     
     for i, test in enumerate(test_cases, 1):

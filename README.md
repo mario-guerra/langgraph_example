@@ -1,32 +1,38 @@
-# Adaptive Multi-Agent Research System 🧠🔍
+# OrchidTrace LangGraph Integration Example 🧠🔍
 
-A production-grade, stateful "Plan-Execute" research framework built with LangGraph. Powered by a **Tri-Model Adversarial Architecture** utilizing OpenAI (`o3-mini`), Anthropic (`claude-3.5-sonnet-latest`), and Google Vertex AI (`gemini-2.5-flash`). This project demonstrates advanced agentic patterns, moving beyond static routing to dynamic, uncertainty-driven research loops. It features autonomous planning, structured LLM reasoning, credibility scoring, and an adversarial debate pipeline to produce highly calibrated answers.
+This repository serves as a reference implementation demonstrating how to integrate the **OrchidTrace debugger** with a production-grade, stateful "Plan-Execute" research framework built with LangGraph. 
+
+By integrating `orchid-sdk`, we are able to capture, inspect, and replay the complex, cyclical execution graph of this Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI).
 
 ## 🚀 Quick Start
+
+To see the Orchid capture mode in action, run the demo script:
 
 ```bash
 # 1. Create and activate a virtual environment
 python -m venv .venv
 source .venv/bin/activate    # On Windows: .venv\Scripts\activate
 
-# 2. Install dependencies
+# 2. Install dependencies (includes orchid-sdk)
 pip install -r requirements.txt
 
 # 3. Authenticate with Google Cloud (for Vertex AI)
 gcloud auth application-default login
 
-# 4. Set up SerpAPI key in .env
+# 4. Set up API keys in .env
 echo "SERPAPI_API_KEY=your_serpapi_key_here" >> .env
+echo "OPENAI_API_KEY=your_openai_key_here" >> .env
+echo "ANTHROPIC_API_KEY=your_anthropic_key_here" >> .env
 
-# 5. Run the interactive CLI
-python main.py
+# 5. Run the Orchid demo
+python orchid_demo.py
 ```
 
-*Note: You can also run `python demo.py` to execute a suite of automated test cases (including complex ambiguity resolution).*
+*Note: The `orchid_demo.py` script executes a suite of automated test cases with Orchid capture mode enabled via `import orchid; orchid.init()`.*
 
 ## 🏗️ Architecture Overview
 
-Unlike traditional DAGs, this system uses a dynamic, cyclical **Plan-Execute** architecture. The graph routes intelligently based on the LLM's own uncertainty and evaluation signals.
+Unlike traditional DAGs, this system uses a dynamic, cyclical **Plan-Execute** architecture. The graph routes intelligently based on the LLM's own uncertainty and evaluation signals. OrchidTrace is used to debug these dynamic routing decisions.
 
 ```mermaid
 graph TD
@@ -50,22 +56,12 @@ graph TD
   M --> N["Final Answer"]
 ```
 
-### Core Pipeline Phases:
-1. **Intent & Clarification**: Parses user intent. If the query is genuinely ambiguous, it pauses execution, prompts the user for clarification, and resumes once answered.
-2. **Plan & Execute**: The Planner generates a `ResearchPlan` (Pydantic schema). The Executor iterates through steps, automatically retrying failed or low-quality search results.
-3. **Uncertainty Loops**: The Evidence Evaluator audits collected data. If it detects coverage gaps or contradictions, it can autonomously append new steps to the plan and send execution back to the Executor.
-4. **Debate & Synthesis**: 
-   - **Credibility Scorer**: Rates every data source on authority, recency, and relevance.
-   - **Optimist**: Drafts the best-case argument from the evidence.
-   - **Skeptic**: Rigorously challenges the optimist's claims, pointing out gaps or low-credibility sources.
-   - **Judge**: Synthesizes the debate into a final, highly-calibrated verdict.
-
 ## 📁 Repository Layout
 
 ```
 langgraph_example/
+├── orchid_demo.py   # Automated integration tests with Orchid capture mode enabled
 ├── main.py          # Interactive CLI with real-time state streaming
-├── demo.py          # Automated integration tests
 ├── graph.py         # Dynamic graph routing and orchestration
 ├── state.py         # Complex AgentState definitions
 ├── schemas.py       # Pydantic models enforcing strict LLM structured outputs
@@ -78,17 +74,6 @@ langgraph_example/
 └── tools.py         # Tool registry (SerpAPI web, news, weather search)
 ```
 
-## ⭐ Key Engineering Features
-
-- **Strict Structured Outputs**: Every single LLM node outputs rigidly defined Pydantic schemas. 
-- **Auto-Correction Loops**: If the LLM generates invalid JSON or violates the Pydantic schema, the `invoke_structured` utility catches the `ValidationError` and feeds it back to the LLM to force a correction before crashing.
-- **Cross-Agent Signaling**: Agents communicate via a shared `scratchpad` using a publish-subscribe signal pattern (e.g., the Evidence Evaluator leaves "flag_finding" signals for the Judge).
-- **Streaming Observability**: The CLI uses `stream_mode=["messages", "updates"]` to provide granular, real-time logging of internal node executions, allowing users to watch the agent "think".
-- **Tri-Model Adversarial Architecture**: The system weaponizes the unique strengths of the three major frontier models against each other:
-  - **OpenAI `o3-mini` (The Architect & Advocate)**: Powers the `Planner` and `Optimist` nodes. Its internal RL-based chain-of-thought makes it unmatched at complex multi-step research decomposition, while its confident synthesis style is perfect for building the strongest possible affirmative case.
-  - **Anthropic `claude-3.5-sonnet-latest` (The Critic & Arbiter)**: Powers the `Skeptic`, `Evidence Evaluator`, and `Judge` nodes. Claude's inherent caution and pedantry make it the ultimate "red team." It ruthlessly spots logical fallacies in the Optimist's argument and delivers perfectly calibrated, hallucination-free final verdicts.
-  - **Google `gemini-2.5-flash` (The Workhorse)**: Powers the `Intent Parser`, `Executor`, and `Credibility Scorer`. Flash’s massive context window and ultra-low latency make it the ideal engine to grind through high-volume, repetitive evaluation loops without bottlenecking the pipeline.
-
 ## 🔧 Setup & Dependencies
 
 ### Prerequisites
@@ -96,16 +81,23 @@ langgraph_example/
 - Google Cloud Platform account (with Vertex AI enabled)
 - `gcloud` CLI installed and authenticated
 - SerpAPI key
+- OpenAI API key
+- Anthropic API key
 
 ### API Keys & Auth
 1. **Vertex AI**: We use `langchain-google-vertexai`. Ensure you have authenticated locally via `gcloud auth application-default login` and set your quota project.
-2. **SerpAPI**: Create a `.env` file and add `SERPAPI_API_KEY=your_key_here`.
+2. **SerpAPI, OpenAI, & Anthropic**: Create a `.env` file and add:
+   ```env
+   SERPAPI_API_KEY=your_key_here
+   OPENAI_API_KEY=your_openai_key_here
+   ANTHROPIC_API_KEY=your_anthropic_key_here
+   ```
 
 ## 🔍 Troubleshooting
 
-- **429 RESOURCE_EXHAUSTED / NOT_FOUND**: This indicates a Google API issue. Ensure you are authenticated via `gcloud auth application-default login` and that your GCP project has the Vertex AI API enabled.
+- **ModuleNotFoundError: No module named 'orchid'**: Ensure you have run `pip install -r requirements.txt` to install the `orchid-sdk`.
+- **429 RESOURCE_EXHAUSTED / NOT_FOUND**: This indicates a Google API issue. Ensure you are authenticated via `gcloud auth application-default login`.
 - **Missing SerpAPI Key**: The Executor will safely catch the missing key and return an error string, but no actual research will occur. Add it to your `.env`.
-- **Hanging Execution**: If the graph seems to pause for a long time at `credibility`, this is normal! The credibility node runs sequential LLM evaluation calls against every search result.
 
 ## 📝 License
 

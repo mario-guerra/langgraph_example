@@ -33,3 +33,8 @@ Thumbs.db
 *.sqlite3
 *.db
 rust_agent/target/*
+
+# TypeScript agent
+ts_agent/node_modules/
+ts_agent/.env
+ts_agent/dist/
