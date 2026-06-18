@@ -1,6 +1,6 @@
 # OrchidTrace LangGraph Integration Example 🧠🔍
 
-This repository serves as a reference implementation demonstrating how to integrate the **OrchidTrace debugger** with a production-grade, stateful "Plan-Execute" research framework built with LangGraph. 
+This repository serves as a reference implementation demonstrating how to integrate the **OrchidTrace debugger** with a stateful "Plan-Execute" research framework built with LangGraph. 
 
 By integrating `orchid-sdk`, we are able to capture, inspect, and replay the complex, cyclical execution graph of this Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI).
 
