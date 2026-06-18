@@ -4,31 +4,85 @@ This repository serves as a reference implementation demonstrating how to integr
 
 By integrating `orchid-sdk`, we are able to capture, inspect, and replay the complex, cyclical execution graph of this Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI).
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Offline Playback
 
-To see the Orchid capture mode in action, run the demo script:
+Before running either mode, ensure you have the [OrchidTrace proxy](https://github.com/mario-guerra/orchid-trace) installed and running in the background.
 
-```bash
-# 1. Create and activate a virtual environment
-python -m venv .venv
-source .venv/bin/activate    # On Windows: .venv\Scripts\activate
+Choose one of the execution modes below:
 
-# 2. Install dependencies (includes orchid-sdk)
-pip install -r requirements.txt
+### Option 1: Replay Mode / Playback (Deterministic Offline Demo)
 
-# 3. Authenticate with Google Cloud (for Vertex AI)
-gcloud auth application-default login
+This is the easiest way to showcase Orchid Trace. It plays back a recorded execution path completely offline from the included fixture, with **zero external API calls and no credential setup needed**.
 
-# 4. Set up API keys in .env
-echo "SERPAPI_API_KEY=your_serpapi_key_here" >> .env
-echo "OPENAI_API_KEY=your_openai_key_here" >> .env
-echo "ANTHROPIC_API_KEY=your_anthropic_key_here" >> .env
+1. **Start the Orchid Proxy** (configured with your `ORCHID_API_KEY`):
+   ```bash
+   docker run -d \
+     --name orchid-proxy \
+     -p 4320:4320 \
+     -p 4321:4321 \
+     -v orchid-data:/data \
+     -e ORCHID_API_KEY=your_proxy_api_key_here \
+     -e ORCHID_DB_PATH=/data/orchid.db \
+     ghcr.io/mario-guerra/orchid-proxy:latest
+   ```
 
-# 5. Run the Orchid demo
-python orchid_demo.py
-```
+2. **Import the Included Demo Fixture** into the proxy:
+   ```bash
+   curl -X POST http://localhost:4321/v1/sessions/import \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer your_proxy_api_key_here" \
+     -d @/path/to/project/orchid_langgraph_demo_fixture.json
+   ```
 
-*Note: The `orchid_demo.py` script executes a suite of automated test cases with Orchid capture mode enabled via `import orchid; orchid.init()`.*
+3. **Configure your Local Environment** for replay:
+   Create a `.env` file in the project root:
+   ```env
+   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_MODE=replay
+   ORCHID_SESSION_ID="Orchid LangGraph Demo"
+   ```
+
+4. **Initialize and Activate Virtual Environment**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate    # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+5. **Run the Playback**:
+   ```bash
+   python orchid_demo.py
+   ```
+
+6. **View the Traces**: Open `http://localhost:4321` in your browser, enter your `ORCHID_API_KEY` to authorize, and inspect the session `"Orchid LangGraph Demo"`.
+
+---
+
+### Option 2: Capture Mode (Live Recording)
+
+To run the multi-agent system live, query the real LLMs, and record your own custom trace session:
+
+1. **Set Up Upstream Credentials** in your `.env` file:
+   ```env
+   SERPAPI_API_KEY=your_serpapi_key_here
+   OPENAI_API_KEY=your_openai_key_here
+   ANTHROPIC_API_KEY=your_anthropic_key_here
+   ORCHID_API_KEY=your_proxy_api_key_here
+   ```
+
+2. **Authenticate with Google Cloud** (for Vertex AI):
+   ```bash
+   gcloud auth application-default login
+   ```
+
+3. **Run the Demo**:
+   ```bash
+   # Ensure ORCHID_MODE is NOT set to 'replay' in your environment or .env
+   python orchid_demo.py
+   ```
+
+*Note: The `orchid_demo.py` script automatically initializes the integration via `import orchid; orchid.init()`.*
+
 
 ## 🏗️ Architecture Overview
 
@@ -86,15 +140,17 @@ langgraph_example/
 
 ### API Keys & Auth
 1. **Vertex AI**: We use `langchain-google-vertexai`. Ensure you have authenticated locally via `gcloud auth application-default login` and set your quota project.
-2. **SerpAPI, OpenAI, & Anthropic**: Create a `.env` file and add:
+2. **SerpAPI, LLMs, & Orchid Proxy**: Create a `.env` file and add:
    ```env
    SERPAPI_API_KEY=your_key_here
    OPENAI_API_KEY=your_openai_key_here
    ANTHROPIC_API_KEY=your_anthropic_key_here
+   ORCHID_API_KEY=your_proxy_api_key_here
    ```
 
 ## 🔍 Troubleshooting
 
+- **Unauthorized: 401 POST http://127.0.0.1:4320**: The Orchid proxy runs in secure mode and requires an API key to accept requests. Ensure `ORCHID_API_KEY` is set in your `.env` file.
 - **ModuleNotFoundError: No module named 'orchid'**: Ensure you have run `pip install -r requirements.txt` to install the `orchid-sdk`.
 - **429 RESOURCE_EXHAUSTED / NOT_FOUND**: This indicates a Google API issue. Ensure you are authenticated via `gcloud auth application-default login`.
 - **Missing SerpAPI Key**: The Executor will safely catch the missing key and return an error string, but no actual research will occur. Add it to your `.env`.

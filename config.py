@@ -32,6 +32,13 @@ def setup_api_keys():
             api_key = getpass.getpass("Enter API key for Anthropic: ")
         os.environ["ANTHROPIC_API_KEY"] = api_key or "DUMMY_KEY"
         
+    # Orchid Proxy API key
+    if not os.environ.get("ORCHID_API_KEY"):
+        api_key = os.getenv("ORCHID_API_KEY")
+        if not api_key:
+            api_key = getpass.getpass("Enter API key for Orchid Proxy: ")
+        os.environ["ORCHID_API_KEY"] = api_key or "DUMMY_KEY"
+        
     # SerpAPI key validation
     if not os.getenv("SERPAPI_API_KEY"):
         print("Warning: SERPAPI_API_KEY not found in environment variables.")

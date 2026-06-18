@@ -1,9 +1,16 @@
 """Demo script to test the multi-agent system without user interaction."""
-import orchid; orchid.init()
+from dotenv import load_dotenv
+load_dotenv()  # Load .env variables first so Orchid has the ORCHID_API_KEY
+
+import orchid
+orchid.init()
+
 from langchain_core.messages import HumanMessage
 from config import setup_api_keys
 from graph import create_research_graph
+from llm import gemini_flash
 from state import AgentState
+
 
 def demo_test():
     """Run a demo test of the system with Orchid capture mode."""
@@ -54,12 +61,22 @@ def demo_test():
                 clarification = state.get("clarification")
                 if clarification and clarification.get("awaiting_response") and not clarification.get("user_answer"):
                     print(f"\n❓ Clarification needed: {clarification['question']}")
-                    simulated_ans = "Assume I am driving from Dallas to Austin at 8pm tonight."
+                    
+                    # Generate a context-appropriate clarification answer dynamically
+                    prompt = (
+                        f"You are simulating a user answering a clarification question for a search query.\n"
+                        f"Original Query: {test['query']}\n"
+                        f"Clarification Question Asked: {clarification['question']}\n\n"
+                        f"Provide a realistic, direct, one-sentence answer that clarifies the query."
+                    )
+                    simulated_ans = gemini_flash.invoke(prompt).content.strip()
+                    
                     print(f"   [Simulated Answer]: {simulated_ans}")
                     clarification["user_answer"] = simulated_ans
                     clarification["awaiting_response"] = False
                     state["clarification"] = clarification
                     continue
+
                 
                 break
 

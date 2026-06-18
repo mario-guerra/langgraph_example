@@ -8,4 +8,4 @@ pydantic>=2.0,<3.0
 langchain-google-vertexai>=2.0.0
 langchain-openai>=0.1.0
 langchain-anthropic>=0.1.0
-orchid-sdk>=0.1.0
+orchid-sdk==0.3.3
