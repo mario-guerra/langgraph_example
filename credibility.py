@@ -17,7 +17,7 @@ You are a research credibility scorer. Evaluate the provided search result.
 
 For each distinct source found in the result, generate a CredibilityAnnotation.
 Rules:
-1. Authority score (0.0-1.0): 
+1. Trust score (0.0-1.0): 
    - 0.9+: Official sources (NWS, NOAA, Reuters, AP)
    - 0.7+: Major local news (statesman.com, KXAN)
    - 0.4-0.6: Aggregators (weather.com, Yahoo)
@@ -29,6 +29,8 @@ Rules:
    - 0.2: older or undated
 3. Relevance score (0.0-1.0): How directly does this source address the query?
 4. Contradictions: If this source contradicts claims made in prior step_ids, list those step_ids.
+
+Format: You MUST call the "CredibilityList" function exactly as defined. Do NOT prepend namespaces (e.g. "default_api.") and do NOT wrap the function call in code execution or Python syntax (e.g. print()).
 
 Analyze carefully.
 """
