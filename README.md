@@ -2,13 +2,13 @@
 
 This repository is a reference implementation of a stateful **Plan-Execute Research Assistant** built on LangGraph. It implements a Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI) to autonomously investigate complex queries, evaluate sources, debate claims from opposing viewpoints, and compile synthesis verdicts.
 
-To visualize, debug, and trace the dynamic cyclical graphs of this system, the project features a **Web Dashboard UI** and comes integrated with the **OrchidTrace proxy debugger** for both **Python** and **TypeScript** execution layers.
+To visualize, debug, and trace the dynamic cyclical graphs of this system, the project features a **Web Dashboard UI** and includes demo integrations with the **OrchidTrace proxy debugger** for both **Python** and **TypeScript** execution layers.
 
 ---
 
 ## 🚀 Quick Start & Offline Playback
 
-Before running either mode, ensure you have the [OrchidTrace proxy](https://github.com/mario-guerra/orchid-trace) installed and running in the background.
+Before running either standalone demo, ensure you have the [OrchidTrace proxy](https://github.com/mario-guerra/orchid-trace) installed and running in the background.
 
 ```bash
 docker run -d \
@@ -129,6 +129,8 @@ To run the TypeScript multi-agent system live, query real LLMs, and record your 
 
 ### Option 3: Interactive Web Dashboard (FastAPI + HTML5/CSS3)
 
+![Web Dashboard Interface](web_ui.png)
+
 Run the full adversarial research multi-agent system inside a web interface. Watch the agent engine's live query expansion, evidence analysis, source credibility checks, and debate loops in real-time.
 
 1. **Activate your Python Virtual Environment**:
@@ -137,7 +139,7 @@ Run the full adversarial research multi-agent system inside a web interface. Wat
    ```
 2. **Start the FastAPI Development Server**:
    ```bash
-   uvicorn server:app --reload --port 8000
+   uvicorn web.server:app --reload --port 8000
    ```
 3. **Open the Dashboard**:
    Navigate to `http://localhost:8000` in your web browser.
