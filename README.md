@@ -146,7 +146,7 @@ Run the full adversarial research multi-agent system inside a web interface. Wat
 
 #### Dashboard Features:
 - **Unified Chronological Flow Map**: A centered, auto-scrolling graph mapping the step-by-step agent lifecycle from query parsing to synthesis judge.
-- **Dynamic Text Scaling Controls**: Use the premium glassmorphic `A−`, `A`, and `A+` buttons in the global header to scale the dashboard typography dynamically to your liking (saved and persisted via `localStorage`).
+- **Dynamic Text Scaling Controls**: Use the `A−`, `A`, and `A+` buttons in the global header to scale the dashboard typography dynamically to your liking (saved and persisted via `localStorage`).
 - **Markdown Tables Compiler**: Native compiler for complex LLM synthesis data, rendering tables with clean, glassmorphic styles and interactive citation highlights.
 - **Historical Run Manager**: Inspect past research sessions synced dynamically via Server-Sent Events, or delete old sessions directly from the sidebar.
 
@@ -184,6 +184,19 @@ graph TD
 
 ```
 langgraph_example/
+├── py_agent/        # Python implementation of the Adversarial Research Agent
+│   ├── __init__.py    # Exposes create_research_graph
+│   ├── agents.py      # Intent, Clarification, Executor, and Evaluator nodes
+│   ├── config.py      # Configuration and API key setup
+│   ├── credibility.py # Source credibility scoring engine
+│   ├── debate.py      # Optimist, Skeptic, and Judge nodes
+│   ├── graph.py       # StateGraph definition and routing logic
+│   ├── llm.py         # Centralized Vertex AI model initialization
+│   ├── planner.py     # Autonomous research planning node
+│   ├── schemas.py     # Pydantic models enforcing structured output validation
+│   ├── state.py       # AgentState definitions
+│   ├── tools.py       # Tool registry (SerpAPI web, news, weather search)
+│   └── utils.py       # LLM structured output query and validation helpers
 ├── ts_agent/        # TypeScript port of the agent system with Orchid integration
 │   ├── src/
 │   │   ├── agents.ts      # Graph nodes and routing functions
@@ -197,21 +210,14 @@ langgraph_example/
 │   │   └── utils.ts       # Retry helpers and validation correction
 │   ├── package.json       # Project dependencies
 │   └── tsconfig.json      # TypeScript configuration
-├── static/          # Premium Web Dashboard assets (HTML, CSS, JS)
+├── web/             # Interactive Dashboard Web Server
+│   ├── .sessions/     # Persistent storage for historical run JSON logs
+│   ├── static/        # Frontend Dashboard client assets (HTML, CSS, JS)
+│   └── server.py      # FastAPI server serving API, static UI, and SSE streams
 ├── tests/           # Integration tests for server endpoints
-├── server.py        # FastAPI server serving APIs, static UI, and SSE streams
 ├── orchid_demo.py   # Automated integration tests with Orchid capture mode enabled (Python)
 ├── main.py          # Interactive CLI with real-time state streaming (Python)
-├── graph.py         # Dynamic graph routing and orchestration (Python)
-├── state.py         # Complex AgentState definitions (Python)
-├── schemas.py       # Pydantic models enforcing strict LLM structured outputs (Python)
-├── agents.py        # Intent, Clarification, Executor, and Evaluator nodes (Python)
-├── planner.py       # Autonomous research planning node (Python)
-├── credibility.py   # Source credibility scoring engine (Python)
-├── debate.py        # Optimist, Skeptic, and Judge nodes (Python)
-├── utils.py         # LLM utilities (e.g., auto-correcting validation loops) (Python)
-├── llm.py           # Centralized Vertex AI model initialization (Python)
-└── tools.py         # Tool registry (SerpAPI web, news, weather search) (Python)
+└── web_ui.png       # Web UI Screenshot
 ```
 
 ---
