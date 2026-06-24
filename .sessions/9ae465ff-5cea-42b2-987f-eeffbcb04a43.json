@@ -1,0 +1,35 @@
+{
+  "session_id": "9ae465ff-5cea-42b2-987f-eeffbcb04a43",
+  "query": "Tell me about an ambiguous topic",
+  "status": "completed",
+  "timestamp": 1782344898.382958,
+  "state": {
+    "messages": [
+      {
+        "role": "human",
+        "content": "Tell me about an ambiguous topic",
+        "id": null
+      },
+      {
+        "role": "human",
+        "content": "I mean Austin, TX",
+        "id": null
+      }
+    ],
+    "parsed_query": {},
+    "clarification": {
+      "question": "Did you mean Austin, TX?",
+      "awaiting_response": false,
+      "user_answer": "I mean Austin, TX"
+    },
+    "research_plan": null,
+    "step_results": [],
+    "scratchpad": [],
+    "retry_counts": {},
+    "augmentation_passes": 0,
+    "optimist_argument": null,
+    "skeptic_argument": null,
+    "final_answer": "Calibrated answer after clarifying: I mean Austin, TX",
+    "answer_confidence": 0.99
+  }
+}

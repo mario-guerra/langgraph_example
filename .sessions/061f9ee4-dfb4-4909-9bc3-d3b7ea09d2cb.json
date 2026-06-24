@@ -1,0 +1,26 @@
+{
+  "session_id": "061f9ee4-dfb4-4909-9bc3-d3b7ea09d2cb",
+  "query": "Some query",
+  "status": "failed",
+  "timestamp": 1782344714.217699,
+  "state": {
+    "messages": [
+      {
+        "role": "human",
+        "content": "Some query",
+        "id": null
+      }
+    ],
+    "parsed_query": {},
+    "clarification": null,
+    "research_plan": null,
+    "step_results": [],
+    "scratchpad": [],
+    "retry_counts": {},
+    "augmentation_passes": 0,
+    "optimist_argument": null,
+    "skeptic_argument": null,
+    "final_answer": null,
+    "answer_confidence": null
+  }
+}

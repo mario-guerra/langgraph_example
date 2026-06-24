@@ -169,5 +169,8 @@ def judge_node(state: AgentState) -> AgentState:
         **state,
         "final_answer": verdict.answer,
         "answer_confidence": verdict.confidence,
+        "winning_position": verdict.winning_position,
+        "uncertainty_flags": verdict.uncertainty_flags,
+        "recommended_followup": verdict.recommended_followup,
         "messages": state["messages"] + [AIMessage(content=verdict.answer)]
     }

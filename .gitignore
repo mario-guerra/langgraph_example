@@ -38,3 +38,4 @@ rust_agent/target/*
 ts_agent/node_modules/
 ts_agent/.env
 ts_agent/dist/
+gcp-key.json

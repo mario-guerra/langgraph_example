@@ -127,6 +127,27 @@ To run the TypeScript multi-agent system live, query real LLMs, and record your 
    npm run demo
    ```
 
+### Option 3: Interactive Web Dashboard (FastAPI + HTML5/CSS3)
+
+Run the full adversarial research multi-agent system inside a web interface. Watch the agent engine's live query expansion, evidence analysis, source credibility checks, and debate loops in real-time.
+
+1. **Activate your Python Virtual Environment**:
+   ```bash
+   source .venv/bin/activate
+   ```
+2. **Start the FastAPI Development Server**:
+   ```bash
+   uvicorn server:app --reload --port 8000
+   ```
+3. **Open the Dashboard**:
+   Navigate to `http://localhost:8000` in your web browser.
+
+#### Dashboard Features:
+- **Unified Chronological Flow Map**: A centered, auto-scrolling graph mapping the step-by-step agent lifecycle from query parsing to synthesis judge.
+- **Dynamic Text Scaling Controls**: Use the premium glassmorphic `A−`, `A`, and `A+` buttons in the global header to scale the dashboard typography dynamically to your liking (saved and persisted via `localStorage`).
+- **Markdown Tables Compiler**: Native compiler for complex LLM synthesis data, rendering tables with clean, glassmorphic styles and interactive citation highlights.
+- **Historical Run Manager**: Inspect past research sessions synced dynamically via Server-Sent Events, or delete old sessions directly from the sidebar.
+
 ---
 
 ## 🏗️ Architecture Overview
@@ -174,6 +195,9 @@ langgraph_example/
 │   │   └── utils.ts       # Retry helpers and validation correction
 │   ├── package.json       # Project dependencies
 │   └── tsconfig.json      # TypeScript configuration
+├── static/          # Premium Web Dashboard assets (HTML, CSS, JS)
+├── tests/           # Integration tests for server endpoints
+├── server.py        # FastAPI server serving APIs, static UI, and SSE streams
 ├── orchid_demo.py   # Automated integration tests with Orchid capture mode enabled (Python)
 ├── main.py          # Interactive CLI with real-time state streaming (Python)
 ├── graph.py         # Dynamic graph routing and orchestration (Python)

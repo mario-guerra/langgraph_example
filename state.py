@@ -33,4 +33,7 @@ class AgentState(TypedDict):
     skeptic_argument: Optional[str]
     final_answer: Optional[str]
     answer_confidence: Optional[float]
+    winning_position: Optional[str]
+    uncertainty_flags: Optional[List[str]]
+    recommended_followup: Optional[str]
 

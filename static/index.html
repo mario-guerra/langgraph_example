@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Suite | Multi-Agent Analysis Engine</title>
+    <meta name="description" content="A premium state-of-the-art multi-agent research dashboard built on LangGraph and FastAPI. Watches live query expansion, evidence analysis, source credibility checks, and adversarial debate logs.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar-panel">
+            <div class="brand">
+                <div class="brand-logo"></div>
+                <h2>Research Suite</h2>
+            </div>
+            
+            <button id="btn-new-research" class="btn-primary">
+                <span class="btn-icon">+</span> New Research
+            </button>
+            
+            <div class="sessions-section">
+                <h3>Historical Logs</h3>
+                <ul id="sessions-list" class="sessions-list">
+                    <!-- Dynamic sessions list -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <!-- Header -->
+            <header class="workspace-header">
+                <div class="header-info">
+                    <h1>Multi-Agent Research Assistant</h1>
+                    <p class="tagline">Plan-Execute Adversarial Consensus Engine</p>
+                </div>
+                <div class="header-actions">
+                    <div class="font-size-adjuster">
+                        <button id="btn-font-dec" class="font-adjust-btn" title="Decrease Text Size">A−</button>
+                        <button id="btn-font-reset" class="font-adjust-btn" title="Reset Text Size">A</button>
+                        <button id="btn-font-inc" class="font-adjust-btn" title="Increase Text Size">A+</button>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="active-node-label" id="current-node-display">IDLE</div>
+                        <span class="status-dot green"></span>
+                        <span id="connection-status">Agent Engine Online</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="unified-workspace-container">
+                <!-- Welcome View -->
+                <div id="welcome-view" class="welcome-container glass-panel">
+                    <div class="welcome-icon">🔍</div>
+                    <h3>Initiate Research Investigation</h3>
+                    <p>Input a complex research query. The agent will formulate a plan, fetch live data, analyze source credibility, and run a structured debate to output a calibrated answer.</p>
+                    
+                    <div class="input-wrapper">
+                        <textarea id="query-input" placeholder="e.g. Will AI be beneficial or detrimental to humanity in five years? Justify your opinion."></textarea>
+                        <button id="btn-submit-query" class="btn-accent">Run Research Engine</button>
+                    </div>
+                </div>
+
+                <!-- Unified Chronological Flow View -->
+                <div id="unified-flow-view" class="unified-flow-view hidden">
+                    
+                    <!-- Row 1: Query Node -->
+                    <div class="flow-node-wrapper" id="fwrapper-query">
+                        <div class="flow-node completed" id="fnode-query">
+                            <div class="node-icon">❓</div>
+                            <div class="node-content">
+                                <h5>User Query</h5>
+                                <span class="node-status">INPUT</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer" id="fdetail-query">
+                            <!-- Query text populated here -->
+                        </div>
+                    </div>
+
+                    <div class="flow-connector vertical" id="fconn-intent"></div>
+
+                    <!-- Row 2: Intent Extraction -->
+                    <div class="flow-node-wrapper" id="fwrapper-intent">
+                        <div class="flow-node" id="fnode-intent">
+                            <div class="node-icon">🔍</div>
+                            <div class="node-content">
+                                <h5>Intent Extraction</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-intent"></div>
+                    </div>
+
+                    <div class="flow-connector vertical" id="fconn-clarify"></div>
+
+                    <!-- Row 3: Disambiguation Check -->
+                    <div class="flow-node-wrapper" id="fwrapper-clarify">
+                        <div class="flow-node" id="fnode-clarify">
+                            <div class="node-icon">💬</div>
+                            <div class="node-content">
+                                <h5>Disambiguation Check</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-clarify">
+                            <!-- Keep inputs static to avoid detached event listeners -->
+                            <div id="clarification-form" class="clarification-inline-form hidden">
+                                <p id="clarification-text" class="clarification-question"></p>
+                                <div class="clarification-input-group">
+                                    <input type="text" id="clarification-input-field" placeholder="Provide clarification here..." class="inline-input">
+                                    <button id="btn-submit-clarification" class="btn-accent inline-btn">Submit Answer</button>
+                                </div>
+                            </div>
+                            <div id="clarification-record" class="clarification-record hidden">
+                                <p id="clarification-saved-question" class="clarification-question"></p>
+                                <p id="clarification-saved-answer" class="clarification-answer"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-connector vertical" id="fconn-planner"></div>
+
+                    <!-- Row 4: Research Planner -->
+                    <div class="flow-node-wrapper" id="fwrapper-planner">
+                        <div class="flow-node" id="fnode-planner">
+                            <div class="node-icon">📋</div>
+                            <div class="node-content">
+                                <h5>Research Planner</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-planner"></div>
+                    </div>
+
+                    <div class="flow-connector vertical" id="fconn-executor"></div>
+
+                    <!-- Row 5: Multi-Step Executor -->
+                    <div class="flow-node-wrapper" id="fwrapper-executor">
+                        <div class="flow-node" id="fnode-executor">
+                            <div class="node-icon">⚙️</div>
+                            <div class="node-content">
+                                <h5>Multi-Step Executor</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="executors-parallel-row hidden" id="fnode-executors-row"></div>
+                        <div class="node-detail-drawer hidden" id="fdetail-executor"></div>
+                    </div>
+
+                    <div class="flow-connector vertical" id="fconn-credibility"></div>
+
+                    <!-- Row 6: Source Credibility -->
+                    <div class="flow-node-wrapper" id="fwrapper-credibility">
+                        <div class="flow-node" id="fnode-credibility">
+                            <div class="node-icon">🛡️</div>
+                            <div class="node-content">
+                                <h5>Credibility Score</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-credibility"></div>
+                    </div>
+
+                    <div class="flow-connector split-connector" id="fconn-debate-split">
+                        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width: 100%; height: 40px; display: block;">
+                            <path d="M50 0 L50 15 L25 15 L25 40 M50 15 L75 15 L75 40" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" id="path-split"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Row 7: Adversarial Debate -->
+                    <div class="flow-node-wrapper" id="fwrapper-debate">
+                        <div class="debate-split-row">
+                            <div class="flow-node optimist" id="fnode-optimist">
+                                <div class="node-icon">📈</div>
+                                <div class="node-content">
+                                    <h5>Optimist Case</h5>
+                                    <span class="node-status">PENDING</span>
+                                </div>
+                            </div>
+                            <div class="flow-node skeptic" id="fnode-skeptic">
+                                <div class="node-icon">📉</div>
+                                <div class="node-content">
+                                    <h5>Skeptic Attack</h5>
+                                    <span class="node-status">PENDING</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-debate"></div>
+                    </div>
+
+                    <div class="flow-connector merge-connector" id="fconn-debate-merge">
+                        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width: 100%; height: 40px; display: block;">
+                            <path d="M25 0 L25 25 L50 25 L50 40 M75 0 L75 25 L50 25" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" id="path-merge"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Row 8: Calibrated Judge -->
+                    <div class="flow-node-wrapper" id="fwrapper-judge">
+                        <div class="flow-node judge" id="fnode-judge">
+                            <div class="node-icon">⚖️</div>
+                            <div class="node-content">
+                                <h5>Calibrated Judge</h5>
+                                <span class="node-status">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="node-detail-drawer hidden" id="fdetail-judge"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
