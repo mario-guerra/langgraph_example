@@ -50,7 +50,7 @@ Plays back a recorded execution path completely offline from the included Python
    ```
 4. **Run the Playback**:
    ```bash
-   python orchid_demo.py
+   python -m py_agent.orchid_demo
    ```
 5. **View the Traces**: Open `http://localhost:4321` in your browser, log in with your API key, and inspect the session `"Orchid LangGraph Demo"`.
 
@@ -71,7 +71,7 @@ To run the Python multi-agent system live, query real LLMs, and record your own 
 3. **Run the Demo**:
    Ensure `ORCHID_MODE` is NOT set to `replay` in `.env` (or set it to `capture`), then:
    ```bash
-   python orchid_demo.py
+   python -m py_agent.orchid_demo
    ```
 
 ---
@@ -196,7 +196,9 @@ langgraph_example/
 │   ├── schemas.py     # Pydantic models enforcing structured output validation
 │   ├── state.py       # AgentState definitions
 │   ├── tools.py       # Tool registry (SerpAPI web, news, weather search)
-│   └── utils.py       # LLM structured output query and validation helpers
+│   ├── utils.py       # LLM structured output query and validation helpers
+│   ├── main.py        # Interactive CLI with real-time state streaming (Python)
+│   └── orchid_demo.py # Automated integration tests with Orchid capture mode enabled (Python)
 ├── ts_agent/        # TypeScript port of the agent system with Orchid integration
 │   ├── src/
 │   │   ├── agents.ts      # Graph nodes and routing functions
@@ -215,8 +217,6 @@ langgraph_example/
 │   ├── static/        # Frontend Dashboard client assets (HTML, CSS, JS)
 │   └── server.py      # FastAPI server serving API, static UI, and SSE streams
 ├── tests/           # Integration tests for server endpoints
-├── orchid_demo.py   # Automated integration tests with Orchid capture mode enabled (Python)
-├── main.py          # Interactive CLI with real-time state streaming (Python)
 └── web_ui.png       # Web UI Screenshot
 ```
 

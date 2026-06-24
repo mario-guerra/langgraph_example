@@ -1,10 +1,10 @@
 """Debate and Judge nodes."""
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from schemas import DebateArgument, JudgeVerdict, StepResult
-from state import AgentState
-from llm import o3_mini, claude_sonnet
-from utils import invoke_structured
-from credibility import build_credibility_report
+from .schemas import DebateArgument, JudgeVerdict, StepResult
+from .state import AgentState
+from .llm import o3_mini, claude_sonnet
+from .utils import invoke_structured
+from .credibility import build_credibility_report
 
 _optimist = o3_mini.with_structured_output(DebateArgument)
 _skeptic = claude_sonnet.with_structured_output(DebateArgument)

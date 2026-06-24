@@ -1,16 +1,16 @@
 """Main graph orchestration for the multi-agent system."""
 from langgraph.graph import StateGraph, END, START
-from state import AgentState
-from agents import (
+from .state import AgentState
+from .agents import (
     intent_parser_node, 
     generate_clarification_node,
     executor_node,
     signal_handler_node,
     evidence_evaluator_node
 )
-from planner import planner_node
-from credibility import credibility_node
-from debate import optimist_node, skeptic_node, judge_node
+from .planner import planner_node
+from .credibility import credibility_node
+from .debate import optimist_node, skeptic_node, judge_node
 
 def route_after_intent(state: AgentState) -> str:
     parsed = state.get("parsed_query", {})

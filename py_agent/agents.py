@@ -1,15 +1,15 @@
 """Agent implementations for the multi-agent system."""
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from schemas import (
+from .schemas import (
     IntentSchema, ClarificationSchema, ClarificationState,
     ResearchPlan, PlanStep, StepResult, EvidenceQuality,
     UncertaintyDecision, UncertaintyAction, EvidenceSufficiencyDecision
 )
-from state import AgentState
-from llm import gemini_flash, claude_sonnet
-from utils import invoke_structured
-from tools import weather_search, news_search, web_search
-from credibility import build_credibility_report
+from .state import AgentState
+from .llm import gemini_flash, claude_sonnet
+from .utils import invoke_structured
+from .tools import weather_search, news_search, web_search
+from .credibility import build_credibility_report
 
 _intent_parser = gemini_flash.with_structured_output(IntentSchema)
 _clarification_generator = gemini_flash.with_structured_output(ClarificationSchema)

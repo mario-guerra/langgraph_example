@@ -16,8 +16,8 @@ from pydantic import BaseModel
 
 # Project imports
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
-from graph import create_research_graph
-from state import AgentState
+from py_agent.graph import create_research_graph
+from py_agent.state import AgentState
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -96,7 +96,7 @@ def deserialize_state(state_dict: dict) -> dict:
 # Session Persistence Manager (Async Background File I/O)
 # -----------------------------------------------------------------------------
 
-SESSIONS_DIR = ".sessions"
+SESSIONS_DIR = os.path.join(os.path.dirname(__file__), ".sessions")
 
 class SessionManager:
     def __init__(self):
@@ -417,6 +417,7 @@ async def clarify_research(req: ClarifyRequest, background_tasks: BackgroundTask
 
 # Serve SPA (Frontend files must be present under static/)
 try:
-    app.mount("/", StaticFiles(directory="static", html=True), name="static")
+    static_dir = os.path.join(os.path.dirname(__file__), "static")
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
 except Exception as e:
     logger.warning(f"Static directory mounting skipped: {e}")

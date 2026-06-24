@@ -6,10 +6,10 @@ import orchid
 orchid.init()
 
 from langchain_core.messages import HumanMessage
-from config import setup_api_keys
-from graph import create_research_graph
-from llm import gemini_flash
-from state import AgentState
+from py_agent.config import setup_api_keys
+from py_agent.graph import create_research_graph
+from py_agent.llm import gemini_flash
+from py_agent.state import AgentState
 
 
 def demo_test():

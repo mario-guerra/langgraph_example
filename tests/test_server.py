@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 from fastapi.testclient import TestClient
-from server import (
+from web.server import (
     app,
     serialize_message,
     deserialize_message,
@@ -28,7 +28,7 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def mock_graph_stream(monkeypatch):
     """Automatically intercepts the graph stream and yields mocked node execution outputs."""
-    from server import research_graph
+    from web.server import research_graph
     
     def mock_stream(state, *args, **kwargs):
         # Retrieve first message content
@@ -223,13 +223,13 @@ def test_session_sorting_order():
 
 def test_resiliency_to_corrupted_sessions(tmp_path):
     # Setup a mock corrupted file in the session dir
-    os.makedirs(".sessions", exist_ok=True)
-    corrupted_file = os.path.join(".sessions", "corrupted.json")
+    os.makedirs("web/.sessions", exist_ok=True)
+    corrupted_file = os.path.join("web/.sessions", "corrupted.json")
     with open(corrupted_file, "w") as f:
         f.write("invalid json data {")
 
     # Re-initialize a SessionManager to verify it skips the file without raising exceptions
-    from server import SessionManager
+    from web.server import SessionManager
     mgr = SessionManager()
     assert "corrupted" not in mgr.sessions
 
@@ -242,7 +242,7 @@ def test_resiliency_to_corrupted_sessions(tmp_path):
 
 @pytest.mark.asyncio
 async def test_client_disconnect_during_stream():
-    from server import sse_event_generator, session_manager
+    from web.server import sse_event_generator, session_manager
     from fastapi import BackgroundTasks
     
     session_id = "test-disconnect-session"
@@ -281,7 +281,7 @@ async def test_client_disconnect_during_stream():
 
 
 def test_background_thread_exception_handling(monkeypatch):
-    from server import research_graph
+    from web.server import research_graph
     
     def crash_stream(*args, **kwargs):
         raise BaseException("Fatal background thread crash!")
@@ -303,14 +303,14 @@ def test_background_thread_exception_handling(monkeypatch):
 
 def test_session_corruption_resilience():
     # Write a JSON file missing critical metadata keys
-    os.makedirs(".sessions", exist_ok=True)
-    corrupt_file = os.path.join(".sessions", "missing_keys.json")
+    os.makedirs("web/.sessions", exist_ok=True)
+    corrupt_file = os.path.join("web/.sessions", "missing_keys.json")
     with open(corrupt_file, "w") as f:
         json.dump({
             "session_id": "missing_keys"
         }, f)
         
-    from server import SessionManager
+    from web.server import SessionManager
     mgr = SessionManager()
     
     # Check list_sessions does not raise KeyError
@@ -364,14 +364,14 @@ def test_disk_write_failure_resilience(monkeypatch):
     session_id = response.headers["X-Session-Id"]
     
     # Server should continue responding cleanly, and in-memory state is still updated
-    from server import session_manager
+    from web.server import session_manager
     sess = session_manager.get(session_id)
     assert sess is not None
     assert sess["query"] == "normal query"
 
 
 def test_serialization_edge_cases():
-    from server import serialize_message, deserialize_message
+    from web.server import serialize_message, deserialize_message
     from langchain_core.messages import SystemMessage
     
     # Serialize SystemMessage (unknown type/role)

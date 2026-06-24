@@ -1,7 +1,7 @@
 from typing import TypedDict, Annotated, List, Optional
 from operator import add
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
-from schemas import ResearchPlan, StepResult, AgentSignal, ClarificationState
+from .schemas import ResearchPlan, StepResult, AgentSignal, ClarificationState
 
 class AgentState(TypedDict):
     """State shared across all agents in the graph."""
