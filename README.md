@@ -1,8 +1,8 @@
-# OrchidTrace LangGraph Integration Example 🧠🔍
+# Multi-Agent Adversarial Research Engine 🧠🔍
 
-This repository serves as a reference implementation demonstrating how to integrate the **OrchidTrace debugger** with a stateful "Plan-Execute" research framework built with LangGraph. 
+This repository is a reference implementation of a stateful **Plan-Execute Research Assistant** built on LangGraph. It implements a Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI) to autonomously investigate complex queries, evaluate sources, debate claims from opposing viewpoints, and compile synthesis verdicts.
 
-By integrating `orchid-sdk`, we are able to capture, inspect, and replay the complex, cyclical execution graph of this Tri-Model Adversarial Architecture (using OpenAI, Anthropic, and Google Vertex AI) in both **Python** and **TypeScript**.
+To visualize, debug, and trace the dynamic cyclical graphs of this system, the project features a **Web Dashboard UI** and comes integrated with the **OrchidTrace proxy debugger** for both **Python** and **TypeScript** execution layers.
 
 ---
 
