@@ -2,6 +2,7 @@ import os
 import json
 import pytest
 import asyncio
+import shutil
 import warnings
 
 # Suppress deprecation warnings from third-party libraries (fastapi, langchain, starlette)
@@ -20,6 +21,22 @@ from web.server import (
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def isolate_sessions(monkeypatch):
+    """Redirect session storage to a repo-local temp directory so tests never pollute web/.sessions/."""
+    import web.server as srv
+    tmp_dir = os.path.join(os.path.dirname(__file__), ".tmp_sessions")
+    os.makedirs(tmp_dir, exist_ok=True)
+    monkeypatch.setattr(srv, "SESSIONS_DIR", tmp_dir)
+    # Reset the in-memory session store
+    original_sessions = dict(session_manager.sessions)
+    session_manager.sessions.clear()
+    yield
+    session_manager.sessions.clear()
+    session_manager.sessions.update(original_sessions)
+    shutil.rmtree(tmp_dir, ignore_errors=True)
 
 # -----------------------------------------------------------------------------
 # Mocks & Fixtures to Prevent External LLM/API Hangs during Tests
@@ -221,10 +238,10 @@ def test_session_sorting_order():
     idx2 = next(i for i, s in enumerate(sessions) if s["session_id"] == sess2)
     assert idx2 < idx1
 
-def test_resiliency_to_corrupted_sessions(tmp_path):
-    # Setup a mock corrupted file in the session dir
-    os.makedirs("web/.sessions", exist_ok=True)
-    corrupted_file = os.path.join("web/.sessions", "corrupted.json")
+def test_resiliency_to_corrupted_sessions():
+    import web.server as srv
+    # Write a corrupted file into the isolated temp sessions dir
+    corrupted_file = os.path.join(srv.SESSIONS_DIR, "corrupted.json")
     with open(corrupted_file, "w") as f:
         f.write("invalid json data {")
 
@@ -232,12 +249,6 @@ def test_resiliency_to_corrupted_sessions(tmp_path):
     from web.server import SessionManager
     mgr = SessionManager()
     assert "corrupted" not in mgr.sessions
-
-    # Cleanup the file
-    try:
-        os.remove(corrupted_file)
-    except OSError:
-        pass
 
 
 @pytest.mark.asyncio
@@ -302,9 +313,9 @@ def test_background_thread_exception_handling(monkeypatch):
 
 
 def test_session_corruption_resilience():
-    # Write a JSON file missing critical metadata keys
-    os.makedirs("web/.sessions", exist_ok=True)
-    corrupt_file = os.path.join("web/.sessions", "missing_keys.json")
+    import web.server as srv
+    # Write a JSON file missing critical metadata keys into the isolated temp dir
+    corrupt_file = os.path.join(srv.SESSIONS_DIR, "missing_keys.json")
     with open(corrupt_file, "w") as f:
         json.dump({
             "session_id": "missing_keys"
@@ -321,12 +332,6 @@ def test_session_corruption_resilience():
     assert corrupt_sess["status"] == "unknown"
     assert corrupt_sess["timestamp"] == 0.0
     assert corrupt_sess["final_answer"] is None
-    
-    # Cleanup
-    try:
-        os.remove(corrupt_file)
-    except OSError:
-        pass
 
 
 def test_concurrent_clarification_prevention():
