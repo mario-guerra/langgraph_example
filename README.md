@@ -8,51 +8,62 @@ To visualize, debug, and trace the dynamic cyclical graphs of this system, the p
 
 ## 🚀 Quick Start & Offline Playback
 
-Before running either standalone demo, ensure you have the [OrchidTrace proxy](https://github.com/mario-guerra/orchid-trace) installed and running in the background.
+### 1. Clone this repository
+
+To run the local demos or inspect the codebase, clone the repository and navigate into it:
 
 ```bash
-docker run -d \
-  --name orchid-proxy \
-  -p 4320:4320 \
-  -p 4321:4321 \
-  -v orchid-data:/data \
-  -e ORCHID_API_KEY=your_proxy_api_key_here \
-  -e ORCHID_DB_PATH=/data/orchid.db \
-  ghcr.io/mario-guerra/orchid-proxy:latest
+git clone https://github.com/mario-guerra/langgraph_example.git
+cd langgraph_example
 ```
+
+### 2. Spin up the local demo proxy
+
+To explore the pre-seeded Python demo trace or run the agent code locally, spin up the demo proxy container:
+
+```bash
+API_KEY="orchid_demo_8675309"
+docker run --pull=always -d --name orchid-proxy-demo \
+  -p 4320:4320 -p 4321:4321 \
+  -e ORCHID_API_KEY=$API_KEY \
+  -e ORCHID_DEMO=1 \
+  -e ORCHID_RETENTION_DAYS=0 \
+  ghcr.io/mario-guerra/orchid-proxy
+```
+
+- **Explore Pre-seeded Python Trace**: Open `http://localhost:4321` in your browser and enter the API key `orchid_demo_8675309` to inspect the pre-seeded Python trace session.
+- **Run Local Demos**: Keep this container running and configure your local environments (Python or TypeScript) to point to it using the API key `orchid_demo_8675309` as described below.
+
 
 ---
 
 ### Option 1: Python Implementation
 
 #### 1. Replay Mode / Playback (Deterministic Offline Demo)
-Plays back a recorded execution path completely offline from the included Python fixture. No external API keys or credentials needed.
+Plays back a recorded execution path completely offline from the pre-seeded Python fixture. No external API keys or credentials needed.
 
-1. **Import the Included Python Demo Fixture** into the proxy:
-   ```bash
-   curl -X POST http://localhost:4321/v1/sessions/import \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer your_proxy_api_key_here" \
-     -d @orchid_langgraph_demo_fixture_python.json
-   ```
-2. **Configure your Local Environment**:
+1. **Configure your Local Environment**:
    Create a `.env` file in the project root:
    ```env
-   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_API_KEY=orchid_demo_8675309
    ORCHID_MODE=replay
    ORCHID_SESSION_ID="Orchid LangGraph Demo"
    ```
-3. **Initialize and Activate Virtual Environment**:
+2. **Initialize and Activate Virtual Environment**:
    ```bash
    python -m venv .venv
    source .venv/bin/activate    # On Windows: .venv\Scripts\activate
    pip install -r requirements.txt
    ```
-4. **Run the Playback**:
+3. **Run the Playback**:
    ```bash
    python -m py_agent.orchid_demo
    ```
-5. **View the Traces**: Open `http://localhost:4321` in your browser, log in with your API key, and inspect the session `"Orchid LangGraph Demo"`.
+   *What to expect*: The script will execute the multi-agent graph nodes (e.g., `[Node: intent_parser] Executed`, `[Node: planner] Executed`) sequentially and output a final synthesis verdict. Because you are in `replay` mode, these requests are intercepted and served instantly by the local Orchid proxy from the pre-seeded fixture without making actual API calls.
+
+4. **View the Traces**: Open `http://localhost:4321` in your browser, log in with the API key `orchid_demo_8675309`, and select the `"Orchid LangGraph Demo"` session.
+   *What to expect*: You'll see a complete chronological trace of the agent's run, including the prompt inputs, tool execution payloads, model parameters, and raw responses for every step in the Plan-Execute loop.
+
 
 #### 2. Capture Mode (Live Recording)
 To run the Python multi-agent system live, query real LLMs, and record your own custom trace session:
@@ -62,7 +73,7 @@ To run the Python multi-agent system live, query real LLMs, and record your own 
    SERPAPI_API_KEY=your_serpapi_key_here
    OPENAI_API_KEY=your_openai_key_here
    ANTHROPIC_API_KEY=your_anthropic_key_here
-   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_API_KEY=orchid_demo_8675309
    ```
 2. **Authenticate with Google Cloud** (for Vertex AI):
    ```bash
@@ -85,13 +96,13 @@ Plays back a recorded execution path completely offline from the included TypeSc
    ```bash
    curl -X POST http://localhost:4321/v1/sessions/import \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer your_proxy_api_key_here" \
+     -H "Authorization: Bearer orchid_demo_8675309" \
      -d @orchid_langgraph_demo_fixture_typescript.json
    ```
 2. **Configure your Local Environment**:
    Create a `.env` file inside the `ts_agent/` directory:
    ```env
-   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_API_KEY=orchid_demo_8675309
    ORCHID_MODE=replay
    ORCHID_SESSION_ID="Orchid LangGraph Demo - TypeScript"
    ```
@@ -104,7 +115,10 @@ Plays back a recorded execution path completely offline from the included TypeSc
    ```bash
    npm run demo
    ```
-5. **View the Traces**: Open `http://localhost:4321` in your browser, log in with your API key, and inspect the session `"Orchid LangGraph Demo - TypeScript"`.
+   *What to expect*: The script runs the TypeScript implementation of the agent graph. Because of `replay` mode, the local proxy will intercept and serve the LLM calls instantly from the imported TS fixture.
+
+5. **View the Traces**: Open `http://localhost:4321` in your browser, log in with the API key `orchid_demo_8675309`, and select the `"Orchid LangGraph Demo - TypeScript"` session.
+   *What to expect*: You'll see the complete trace hierarchy showing the node states, tools called, and LLM completions.
 
 #### 2. Capture Mode (Live Recording)
 To run the TypeScript multi-agent system live, query real LLMs, and record your own custom trace session:
@@ -115,7 +129,7 @@ To run the TypeScript multi-agent system live, query real LLMs, and record your 
    OPENAI_API_KEY=your_openai_key_here
    ANTHROPIC_API_KEY=your_anthropic_key_here
    SERPAPI_API_KEY=your_serpapi_key_here
-   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_API_KEY=orchid_demo_8675309
    ```
 2. **Authenticate with Google Cloud** (for Vertex AI):
    ```bash
@@ -240,7 +254,7 @@ langgraph_example/
    SERPAPI_API_KEY=your_key_here
    OPENAI_API_KEY=your_openai_key_here
    ANTHROPIC_API_KEY=your_anthropic_key_here
-   ORCHID_API_KEY=your_proxy_api_key_here
+   ORCHID_API_KEY=orchid_demo_8675309
    ```
 
 ---
