@@ -43,12 +43,16 @@ docker run --pull=always -d --name orchid-proxy-demo \
 Plays back a recorded execution path completely offline from the pre-seeded Python fixture. No external API keys or credentials needed.
 
 1. **Configure your Local Environment**:
-   Create a `.env` file in the project root:
-   ```env
-   ORCHID_API_KEY=orchid_demo_8675309
-   ORCHID_MODE=replay
-   ORCHID_SESSION_ID="Orchid LangGraph Demo"
-   ```
+   Create a `.env` file in the project root by running:
+
+   - **macOS / Linux**:
+     ```bash
+     printf 'ORCHID_API_KEY=orchid_demo_8675309\nORCHID_MODE=replay\nORCHID_SESSION_ID="Orchid LangGraph Demo"\n' > .env
+     ```
+   - **Windows (PowerShell)**:
+     ```powershell
+     'ORCHID_API_KEY=orchid_demo_8675309', 'ORCHID_MODE=replay', 'ORCHID_SESSION_ID="Orchid LangGraph Demo"' | Out-File -Encoding utf8 .env
+     ```
 2. **Initialize and Activate Virtual Environment**:
    ```bash
    python -m venv .venv
@@ -100,12 +104,16 @@ Plays back a recorded execution path completely offline from the included TypeSc
      -d @orchid_langgraph_demo_fixture_typescript.json
    ```
 2. **Configure your Local Environment**:
-   Create a `.env` file inside the `ts_agent/` directory:
-   ```env
-   ORCHID_API_KEY=orchid_demo_8675309
-   ORCHID_MODE=replay
-   ORCHID_SESSION_ID="Orchid LangGraph Demo - TypeScript"
-   ```
+   Create a `.env` file inside the `ts_agent/` directory by running:
+
+   - **macOS / Linux**:
+     ```bash
+     printf 'ORCHID_API_KEY=orchid_demo_8675309\nORCHID_MODE=replay\nORCHID_SESSION_ID="Orchid LangGraph Demo - TypeScript"\n' > ts_agent/.env
+     ```
+   - **Windows (PowerShell)**:
+     ```powershell
+     'ORCHID_API_KEY=orchid_demo_8675309', 'ORCHID_MODE=replay', 'ORCHID_SESSION_ID="Orchid LangGraph Demo - TypeScript"' | Out-File -Encoding utf8 ts_agent/.env
+     ```
 3. **Install Dependencies**:
    ```bash
    cd ts_agent
